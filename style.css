@@ -1,0 +1,1263 @@
+
+/* Версия: 4.0.0 | Pixel Studios */
+/* ===================================================================
+ * ЧАСТЬ 1: СБРОС СТИЛЕЙ И БАЗОВЫЕ НАСТРОЙКИ
+ * =================================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+  background: #0a0a0f;
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 2: ПЕРЕМЕННЫЕ CSS (ТЕМЫ)
+ * =================================================================== */
+
+:root {
+  /* Основные цвета */
+  --primary: #ffd700;
+  --primary-dark: #ccaa00;
+  --primary-light: #ffed4a;
+  --secondary: #4169E1;
+  --secondary-dark: #2a4ab3;
+  --secondary-light: #6a8eff;
+  
+  /* Цвета состояний */
+  --success: #2ecc71;
+  --success-dark: #25a25a;
+  --warning: #f39c12;
+  --warning-dark: #d68910;
+  --error: #e74c3c;
+  --error-dark: #c0392b;
+  --info: #3498db;
+  --info-dark: #2980b9;
+  
+  /* Цвета команд */
+  --ct-color: #3498db;
+  --t-color: #e74c3c;
+  
+  /* Фоновые цвета */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --bg-card: rgba(26, 26, 46, 0.95);
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* Цвета текста */
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-muted: #888888;
+  --text-gold: #ffd700;
+  
+  /* Границы */
+  --border-light: #3a4a5a;
+  --border-gold: #ffd70040;
+  
+  /* Тени */
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.2);
+  --shadow-md: 0 5px 20px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 20px rgba(255, 215, 0, 0.3);
+  
+  /* Радиусы */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 30px;
+  
+  /* Анимации */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* Тёмная тема (по умолчанию) */
+[data-theme="dark"] {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+}
+
+/* Светлая тема */
+[data-theme="light"] {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8e8e8;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --border-light: #dddddd;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 3: ФОН И ПАРАЛЛАКС
+ * =================================================================== */
+
+.background-layer {
+  position: fixed;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.1s ease-out;
+  z-index: 0;
+}
+
+#bgLayer1 {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+  opacity: 1;
+}
+
+#bgLayer2 {
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,215,0,0.05)" stroke-width="1"/><circle cx="20" cy="20" r="2" fill="rgba(255,215,0,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.5) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 4: ЧАСТИЦЫ
+ * =================================================================== */
+
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+  animation: float 8s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.5; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
+}
+
+/* ===================================================================
+ * ЧАСТЬ 5: ЭКРАН СТУДИИ
+ * =================================================================== */
+
+#studioScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: studioFadeOut 0.5s ease-in-out 2.5s forwards;
+}
+
+@keyframes studioFadeOut {
+  0%, 80% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+.studio-container {
+  text-align: center;
+  animation: studioPulse 2s ease-in-out;
+}
+
+@keyframes studioPulse {
+  0% { opacity: 0; transform: scale(0.95); }
+  20% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+
+.pixel-blocks {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.pixel-block {
+  width: 45px;
+  height: 45px;
+  background: #ffffff;
+  animation: blockFloat 1s ease-in-out infinite alternate;
+}
+
+.pixel-block:nth-child(1) { animation-delay: 0s; }
+.pixel-block:nth-child(2) { animation-delay: 0.15s; }
+.pixel-block:nth-child(3) { animation-delay: 0.3s; }
+.pixel-block:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes blockFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20px); }
+}
+
+.studio-name {
+  font-family: 'Courier New', monospace;
+  font-size: 32px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  text-shadow: 0 0 30px rgba(255,255,255,0.5);
+}
+
+.studio-tagline {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #888888;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 6: SPLASH SCREEN (ЗАГРУЗКА)
+ * =================================================================== */
+
+#splashScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-tertiary));
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-out;
+}
+
+#splashScreen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-logo {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  line-height: 1.2;
+  font-weight: bold;
+  color: var(--primary);
+  text-shadow: 0 0 20px var(--primary), 0 0 40px var(--secondary);
+  white-space: pre;
+  display: inline-block;
+  padding: 25px;
+  background: var(--bg-overlay);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-gold);
+  backdrop-filter: blur(10px);
+  animation: logoGlow 2s infinite alternate;
+  margin-bottom: 30px;
+}
+
+@keyframes logoGlow {
+  from { box-shadow: 0 0 20px var(--border-gold); }
+  to { box-shadow: 0 0 50px var(--primary), 0 0 80px var(--secondary); }
+}
+
+.splash-progress {
+  width: 280px;
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-top: 30px;
+  border: 1px solid var(--border-gold);
+}
+
+.splash-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--warning));
+  border-radius: var(--radius-sm);
+  transition: width 0.3s;
+  animation: loadingPulse 1.5s infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.splash-text {
+  color: var(--primary);
+  font-size: 16px;
+  letter-spacing: 6px;
+  margin-top: 15px;
+  text-transform: uppercase;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.splash-version {
+  position: absolute;
+  bottom: 25px;
+  color: var(--text-muted);
+  font-size: 13px;
+  letter-spacing: 3px;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 7: ГЛАВНОЕ МЕНЮ
+ * =================================================================== */
+
+.menu, .screen {
+  position: relative;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 15px 12px 80px;
+  backdrop-filter: blur(3px);
+}
+
+#mainMenu {
+  display: flex;
+}
+
+/* Профиль игрока */
+.player-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  margin-bottom: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.avatar-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 65px;
+  height: 65px;
+  background: linear-gradient(135deg, #2a2a4a, #1a1a2e);
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  box-shadow: var(--shadow-glow);
+  transition: transform var(--transition-fast);
+}
+
+.avatar:active {
+  transform: scale(0.95);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rank-badge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.player-info {
+  flex: 1;
+}
+
+.player-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.player-rank {
+  font-size: 14px;
+  color: var(--primary);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.player-level {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.xp-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--warning));
+  border-radius: var(--radius-sm);
+  transition: width 0.5s;
+}
+
+/* Ресурсы */
+.resources {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.resource {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 10px 5px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.resource-icon {
+  font-size: 22px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.resource-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--primary);
+  display: block;
+}
+
+.resource-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Быстрая статистика */
+.quick-stats {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(10,15,25,0.6);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 15px;
+  backdrop-filter: blur(5px);
+}
+
+.stat-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stat-mini span:first-child {
+  font-size: 22px;
+  margin-bottom: 3px;
+}
+
+/* Логотип */
+.game-title {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.pixel-logo {
+  font-family: 'Courier New', monospace;
+  font-size: 7px;
+  line-height: 1.2;
+  font-weight: bold;
+  color: var(--primary);
+  text-shadow: 0 0 15px var(--primary);
+  letter-spacing: 0;
+  white-space: pre;
+  display: inline-block;
+  background: var(--bg-overlay);
+  padding: 15px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-gold);
+  backdrop-filter: blur(5px);
+}
+
+/* Ежедневная награда */
+.daily-reward {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.1));
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-md);
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.daily-reward:active {
+  transform: scale(0.98);
+  background: rgba(255,215,0,0.15);
+}
+
+.reward-icon {
+  font-size: 32px;
+}
+
+.reward-info {
+  flex: 1;
+}
+
+.reward-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.reward-timer {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.reward-arrow {
+  font-size: 26px;
+  color: var(--primary);
+}
+
+/* Кнопки меню */
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  width: 100%;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: bold;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.menu-btn:hover::before {
+  left: 100%;
+}
+
+.menu-btn:active {
+  transform: scale(0.98);
+  border-color: var(--primary);
+}
+
+.menu-btn.primary {
+  background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,140,0,0.2));
+  border-color: var(--primary);
+}
+
+.btn-icon {
+  font-size: 28px;
+  width: 40px;
+  text-align: center;
+}
+
+.btn-text {
+  flex: 1;
+  text-align: left;
+}
+
+.btn-hint, .btn-badge {
+  background: rgba(0,0,0,0.3);
+  padding: 4px 10px;
+  border-radius: var(--radius-xl);
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.menu-row {
+  display: flex;
+  gap: 8px;
+}
+
+.menu-btn.small {
+  flex: 1;
+  padding: 14px 10px;
+}
+
+.menu-btn.small .btn-icon {
+  font-size: 22px;
+  width: 30px;
+}
+
+/* Нижнее меню */
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-gold);
+  padding: 8px 5px;
+  backdrop-filter: blur(20px);
+  z-index: 100;
+}
+
+.bottom-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  min-width: 55px;
+  transition: all var(--transition-fast);
+}
+
+.bottom-btn span:first-child {
+  font-size: 22px;
+}
+
+.bottom-btn:active {
+  background: rgba(255,215,0,0.1);
+  color: var(--primary);
+}
+
+.bottom-btn.exit {
+  color: var(--error);
+}
+
+/* ===================================================================
+ * ЧАСТЬ 8: ЭКРАН ВХОДА
+ * =================================================================== */
+
+.login-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-tertiary));
+  z-index: 9998;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-container {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.login-title {
+  color: var(--primary);
+  font-size: 26px;
+  margin: 20px 0 10px;
+  letter-spacing: 2px;
+}
+
+.login-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition-fast);
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+}
+
+.login-btn.google {
+  background: #4285F4;
+  color: white;
+  box-shadow: 0 5px 15px #4285F460;
+}
+
+.login-btn.guest {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.login-info {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.login-terms {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.login-terms a {
+  color: var(--warning);
+  text-decoration: none;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 9: МОДАЛЬНЫЕ ОКНА
+ * =================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(5px);
+  z-index: 200;
+  display: none;
+  animation: fadeIn 0.2s;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 380px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-xl);
+  padding: 25px;
+  z-index: 201;
+  display: none;
+  box-shadow: 0 0 60px rgba(255,215,0,0.3);
+  animation: modalSlideIn 0.3s;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translate(-50%, -40%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal h3 {
+  color: var(--primary);
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 10: УВЕДОМЛЕНИЯ
+ * =================================================================== */
+
+.notification-container {
+  position: fixed;
+  top: 20px;
+  left: 15px;
+  right: 15px;
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notification {
+  background: var(--bg-card);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.3s;
+  pointer-events: auto;
+  box-shadow: var(--shadow-md);
+}
+
+.notification.success { border-left-color: var(--success); }
+.notification.error { border-left-color: var(--error); }
+.notification.warning { border-left-color: var(--warning); }
+.notification.info { border-left-color: var(--info); }
+
+.notification-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.notification-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===================================================================
+ * ЧАСТЬ 11: КАРТОЧКИ И СЕТКИ
+ * =================================================================== */
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 15px 10px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.97);
+}
+
+.card-image {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.card-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  min-height: 40px;
+}
+
+.card-price {
+  color: var(--primary);
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-rarity {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: var(--radius-xl);
+  display: inline-block;
+}
+
+/* Редкости */
+.rarity-common { border-left: 4px solid #888; }
+.rarity-rare { border-left: 4px solid #4169E1; }
+.rarity-epic { border-left: 4px solid #8A2BE2; }
+.rarity-legendary { border-left: 4px solid #FFD700; }
+.rarity-mythic { border-left: 4px solid #FF4500; }
+
+/* ===================================================================
+ * ЧАСТЬ 12: ФОРМЫ И ИНПУТЫ
+ * =================================================================== */
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px 15px;
+  background: #0a0a0f;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.1);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Switch (переключатель) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  transition: var(--transition-base);
+  border-radius: 26px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: var(--transition-base);
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--success);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Range Slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 6px;
+  background: #333;
+  border-radius: var(--radius-sm);
+  padding: 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===================================================================
+ * ЧАСТЬ 13: АНИМАЦИИ ДЛЯ КЕЙСОВ
+ * =================================================================== */
+
+.scroll-container {
+  width: 100%;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  padding: 20px 0;
+  position: relative;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-content {
+  display: flex;
+  gap: 10px;
+  padding: 0 50%;
+}
+
+.scroll-item {
+  min-width: 130px;
+  padding: 15px 10px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.scroll-highlight {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 130px;
+  border: 3px solid var(--primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 40px var(--primary), inset 0 0 20px var(--border-gold);
+  pointer-events: none;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 30px var(--primary), inset 0 0 15px var(--border-gold); }
+  50% { box-shadow: 0 0 50px var(--primary), inset 0 0 25px var(--border-gold); }
+}
+
+/* ===================================================================
+ * ЧАСТЬ 14: ИГРОВОЙ ИНТЕРФЕЙС
+ * =================================================================== */
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-secondary);
+}
+
+.crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.hitmarker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 101;
+  opacity: 0;
+}
+
+.kill-feed {
+  position: absolute;
+  top: 70px;
+  right: 15px;
+  z-index: 50;
+  text-align: right;
+  font-size: 14px;
+  text-shadow: 1px 1px 3px black;
+}
+
+/* ===================================================================
+ * ЧАСТЬ 15: АДАПТИВНОСТЬ (МЕДИА-ЗАПРОСЫ)
+ * =================================================================== */
+
+@media (max-width: 480px) {
+  .menu-btn { padding: 14px 15px; font-size: 14px; }
+  .game-title { font-size: 28px; }
+  .resource-value { font-size: 16px; }
+  .pixel-logo { font-size: 5px; }
+  .splash-logo { font-size: 6px; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .items-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 769px) {
+  body { max-width: 500px; margin: 0 auto; }
+  .bottom-menu { max-width: 500px; left: 50%; transform: translateX(-50%); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .items-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  body { max-width: 1200px; }
+  .items-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ===================================================================
+ * ЧАСТЬ 16: УТИЛИТЫ
+ * =================================================================== */
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-gold { color: var(--primary); }
+.text-success { color: var(--success); }
+.text-error { color: var(--error); }
+.text-warning { color: var(--warning); }
+.text-m
+
+/* Дополнительные стили для улучшенного меню */
+.screen, #mainMenu {
+    transition: opacity 0.3s ease;
+}
+
+.menu-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-back {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: var(--bg-card);
+    border: 1px solid var(--border-gold);
+    border-radius: 30px;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.nav-back:active {
+    transform: scale(0.95);
+}
+
+.screen-header {
+    text-align: center;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    text-shadow: 0 0 20px var(--primary);
+}
+
+.dialog-btn {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.dialog-btn:active {
+    transform: scale(0.95);
+}
+
+.dialog-btn.confirm {
+    background: var(--error);
+}
+
+.dialog-btn.cancel {
+    background: #333;
+}

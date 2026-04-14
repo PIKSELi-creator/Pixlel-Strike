@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Pixel Strike 15.0 — тактический шутер в стиле Free Fire и PUBG">
+    <meta name="keywords" content="шутер, игра, pixel strike, free fire, pubg, mobile game, battle royale">
+    <title>PIXEL STRIKE 15.0 • LEGENDARY</title>
+    
+    <!-- Основные стили -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Иконки -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <!-- Three.js (3D-графика) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+            }
+        }
+    </script>
+    
+    <!-- Howler.js (Звуки) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    
+    <!-- Socket.io (Мультиплеер) -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Firebase (Авторизация Google) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- GSAP (Плавные анимации) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Chart.js (Графики статистики) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Particles.js (Эффекты частиц) -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    
+    <!-- Hammer.js (Жесты для телефона) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    
+    <style>
+        /* БАЗОВЫЕ СТИЛИ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: #0a0a0f;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* ЭКРАН ПОВОРОТА ТЕЛЕФОНА */
+        #rotateScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0f;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #rotateScreen .rotate-icon {
+            font-size: 80px;
+            animation: rotatePhone 2s infinite;
+        }
+        
+        @keyframes rotatePhone {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-90deg); }
+            75% { transform: rotate(-90deg); }
+        }
+        
+        #rotateScreen .rotate-text {
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        #rotateScreen .rotate-subtext {
+            color: #888;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        /* ЭКРАНЫ */
+        .menu, .screen {
+            position: relative;
+            z-index: 10;
+            display: none;
+            min-height: 100vh;
+        }
+        
+        #mainMenu {
+            display: flex;
+        }
+        
+        /* МОДАЛЬНЫЕ ОКНА */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 200;
+            display: none;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 350px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #ffd700;
+            border-radius: 25px;
+            padding: 25px;
+            z-index: 201;
+            display: none;
+            box-shadow: 0 0 50px rgba(255,215,0,0.3);
+        }
+        
+        /* УВЕДОМЛЕНИЯ */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 250;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        
+        .notification {
+            background: rgba(30,40,60,0.95);
+            border-left: 4px solid #ffd700;
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            animation: slideDown 0.3s;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* ЧАСТИЦЫ */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== ЭКРАН ПОВОРОТА ТЕЛЕФОНА ========== -->
+<div id="rotateScreen">
+    <div class="rotate-icon">📱➡️🔄</div>
+    <div class="rotate-text">ПОВЕРНИТЕ ТЕЛЕФОН</div>
+    <div class="rotate-subtext">для продолжения игры</div>
+</div>
+
+<!-- ========== ГЛАВНОЕ МЕНЮ ========== -->
+<div id="mainMenu" class="menu"></div>
+
+<!-- ========== ЭКРАНЫ ========== -->
+<div id="shopScreen" class="screen"></div>
+<div id="inventoryScreen" class="screen"></div>
+<div id="casesScreen" class="screen"></div>
+<div id="battlepassScreen" class="screen"></div>
+<div id="dailyScreen" class="screen"></div>
+<div id="friendsScreen" class="screen"></div>
+<div id="clanScreen" class="screen"></div>
+<div id="ranksScreen" class="screen"></div>
+<div id="statsScreen" class="screen"></div>
+<div id="settingsScreen" class="screen"></div>
+<div id="profileScreen" class="screen"></div>
+<div id="lobbyScreen" class="screen"></div>
+<div id="mapSelectScreen" class="screen"></div>
+<div id="gameScreen" class="screen"></div>
+<div id="achievementsScreen" class="screen"></div>
+<div id="marketScreen" class="screen"></div>
+<div id="tournamentScreen" class="screen"></div>
+<div id="spectatorScreen" class="screen"></div>
+<div id="replayScreen" class="screen"></div>
+<div id="editorScreen" class="screen"></div>
+
+<!-- ========== МОДАЛЬНЫЕ ОКНА ========== -->
+<div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
+<div id="caseOpeningModal" class="modal"></div>
+<div id="confirmModal" class="modal"></div>
+<div id="rewardModal" class="modal"></div>
+
+<!-- ========== УВЕДОМЛЕНИЯ ========== -->
+<div id="notificationContainer" class="notification-container"></div>
+
+<!-- ========== ЧАСТИЦЫ (ФОН) ========== -->
+<div id="particles-js"></div>
+
+<!-- =================================================================== -->
+<!--                    ВСЕ ПОДКЛЮЧЁННЫЕ ФАЙЛЫ                            -->
+<!-- =================================================================== -->
+
+<!-- 1. КОНФИГУРАЦИЯ И УТИЛИТЫ -->
+<script src="config.js"></script>
+<script src="utils.js"></script>
+
+<!-- 2. ОПРЕДЕЛЕНИЕ УСТРОЙСТВА -->
+<script src="deviceDetector.js"></script>
+
+<!-- 3. МЕГА-ЗАГРУЗОЧНЫЙ ЭКРАН (5000+ строк) -->
+<script type="module" src="loading_screen.js"></script>
+
+<!-- 4. СИСТЕМЫ ИГРОКА -->
+<script src="player.js"></script>
+<script src="animation.js"></script>
+<script src="sounds.js"></script>
+
+<!-- 5. ИГРОВЫЕ МОДУЛИ -->
+<script src="shop.js"></script>
+<script src="inventory.js"></script>
+<script src="cases.js"></script>
+<script src="daily.js"></script>
+<script src="battlepass.js"></script>
+<script src="ranks.js"></script>
+<script src="stats.js"></script>
+<script src="maps.js"></script>
+
+<!-- 6. СОЦИАЛЬНЫЕ МОДУЛИ -->
+<script src="lobby.js"></script>
+<script src="friends.js"></script>
+<script src="clan.js"></script>
+<script src="market.js"></script>
+<script src="achievements.js"></script>
+
+<!-- 7. АВТОРИЗАЦИЯ И БАЗА ДАННЫХ -->
+<script src="auth.js"></script>
+<script src="database.js"></script>
+
+<!-- 8. МУЛЬТИПЛЕЕР -->
+<script src="network.js"></script>
+
+<!-- 9. ДОПОЛНИТЕЛЬНЫЕ РЕЖИМЫ -->
+<script src="tournament.js"></script>
+<script src="spectator.js"></script>
+<script src="replay.js"></script>
+<script src="editor.js"></script>
+
+<!-- 10. ОСНОВНОЙ 3D-ДВИЖОК -->
+<script type="module" src="game3d.js"></script>
+
+<!-- 11. ГЛОБАЛЬНЫЕ ФУНКЦИИ -->
+<script>
+    // Закрытие модальных окон
+    function closeModal() {
+        document.getElementById('modalOverlay').style.display = 'none';
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    }
+    
+    // Переключение экранов
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen, #mainMenu').forEach(el => el.style.display = 'none');
+        const target = document.getElementById(screenId);
+        if (target) target.style.display = screenId === 'mainMenu' ? 'flex' : 'block';
+    }
+    
+    // Форматирование чисел
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+    
+    // Воспроизведение звука
+    function playSound(type) {
+        if (typeof window.playSound === 'function') window.playSound(type);
+    }
+    
+    // Показ уведомления
+    function showNotification(title, message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+        
+        const colors = { success: '#2ecc71', error: '#e74c3c', warning: '#f39c12', info: '#3498db' };
+        
+        const notif = document.createElement('div');
+        notif.className = 'notification';
+        notif.style.borderLeftColor = colors[type] || '#ffd700';
+        notif.innerHTML = `
+            <div style="font-weight:bold;color:${colors[type] || '#ffd700'}">${title}</div>
+            <div style="font-size:13px;color:#ccc;margin-top:5px;">${message}</div>
+        `;
+        
+        container.appendChild(notif);
+        
+        setTimeout(() => {
+            notif.style.animation = 'slideDown 0.3s reverse';
+            setTimeout(() => notif.remove(), 300);
+        }, 3000);
+    }
+    
+    // Выход из игры
+    function exitGame() {
+        if (confirm('Выйти из игры?')) {
+            if (typeof signOut === 'function') signOut();
+            window.location.href = 'about:blank';
+        }
+    }
+    
+    // Глобальные функции
+    window.closeModal = closeModal;
+    window.showScreen = showScreen;
+    window.formatNumber = formatNumber;
+    window.playSound = playSound;
+    window.showNotification = showNotification;
+    window.exitGame = exitGame;
+</script>
+
+<!-- 12. ОРИЕНТАЦИЯ ЭКРАНА -->
+<script>
+    (function() {
+        function checkOrientation() {
+            const isLandscape = window.innerWidth > window.innerHeight;
+            const rotateScreen = document.getElementById('rotateScreen');
+            const mainMenu = document.getElementById('mainMenu');
+            
+            if (!isLandscape && window.deviceInfo?.isMobile) {
+                if (rotateScreen) rotateScreen.style.display = 'flex';
+                if (mainMenu) mainMenu.style.display = 'none';
+            } else {
+                if (rotateScreen) rotateScreen.style.display = 'none';
+                if (mainMenu) mainMenu.style.display = 'flex';
+            }
+        }
+        
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', checkOrientation);
+        document.addEventListener('DOMContentLoaded', checkOrientation);
+    })();
+</script>
+
+<!-- 13. ГЛАВНОЕ МЕНЮ (ЛОББИ) -->
+<script src="lobby_horizontal.js"></script>
+
+<!-- 14. ФИНАЛЬНАЯ ИНИЦИАЛИЗАЦИЯ -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('╔══════════════════════════════════════════════════════════════╗');
+        console.log('║     🎮 PIXEL STRIKE 15.0 ULTIMATE — ЗАГРУЖЕН! 🎮            ║');
+        console.log('║                    Все системы активны                        ║');
+        console.log('╚══════════════════════════════════════════════════════════════╝');
+        
+        // Инициализация частиц
+        if (typeof particlesJS !== 'undefined') {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 50, density: { enable: true, value_area: 800 } },
+                    color: { value: '#ffd700' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.3, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#ffd700', opacity: 0.2, width: 1 },
+                    move: { enable: true, speed: 1.5, direction: 'none', random: true, out_mode: 'out' }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'repulse' } }
+                },
+                retina_detect: true
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
